@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import InputField from "../Component/InputFields";
-import { getProfile } from "../api/user.api";
+import { getProfile, updateProfile } from "../api/user.api";
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../store/user/userSlice';
 
 const Profile = () => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -23,9 +27,26 @@ const Profile = () => {
     setFormData({ ...formData, [name]: files[0] });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
+    const payload = {
+      firstname: formData.firstname,
+      lastname: formData.lastname,
+      phone: formData.phone,
+      profileimage: formData.profileimage,
+    }
+    console.log("Form Data Submitted:", payload);
+    // Call the updateProfile API here with the payload
+    const response = await updateProfile(payload);
+    if (response.status === 200) {
+      console.log("Profile updated successfully:", response.data);
+      const { user } = response.data;
+      dispatch(setUser(user)); 
+      setIsEditing(false); // Exit edit mode after successful update
+      toast.success("Profile updated successfully!");
+
+
+    }
   };
 
   const fetchProfileData = async () => {
@@ -37,7 +58,7 @@ const Profile = () => {
         lastname,
         email,
         phone,
-        profileimage: null,
+        // profileimage: null,
       });
     } catch (error) {
       console.error("Error fetching profile data:", error);
@@ -89,13 +110,6 @@ const Profile = () => {
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
-            disabled={!isEditing}
-          />
-          <InputField
-            label="Upload Profile Image"
-            name="profileimage"
-            type="file"
-            onChange={handleFileChange}
             disabled={!isEditing}
           />
         </div>

@@ -1,30 +1,36 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import dayjs from 'dayjs';
+import React, { useEffect, useState } from 'react';
 import TodayTask from '../Component/TodayTask';
 import PieChart from '../Component/PieChart';
+import { getTodaytask } from '../api/task.api';
 
 const HomePage = () => {
-  const tasks = useSelector((state) => state.task.tasks);
-  const today = dayjs().format('YYYY-MM-DD');
-  const todayTasks = tasks.filter(task => task.date === today);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+     const {data} = await getTodaytask();
+      setTasks(data.data);
+    };
+    fetchTasks();
+  }, []);
+
 
   const stats = [
     {
       title: "Today's Tasks",
-      count: todayTasks.length,
+      count: tasks.length,
     },
     {
       title: "Today's Pending Task",
-      count: todayTasks.filter(task => task.status === 'Pending').length,
+      count: tasks.filter(task => task.status === 'Pending').length,
     },
     {
       title: "Today's In Progress Task",
-      count: todayTasks.filter(task => task.status === 'In Progress').length,
+      count: tasks.filter(task => task.status === 'Progress').length,
     },
     {
       title: "Today's Completed Task",
-      count: todayTasks.filter(task => task.status === 'Completed').length,
+      count: tasks.filter(task => task.status === 'Completed').length,
     },
   ];
 
@@ -47,7 +53,7 @@ const HomePage = () => {
         <div className='w-full lg:w-1/3 h-full p-4 bg-text-color/5 rounded-md'>
           <h1 className='text-lg font-medium'>Today's Tasks by Status</h1>
           <div className='flex items-center justify-center w-full h-full'>
-            <PieChart />
+            <PieChart tasks={tasks} />
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ export const MainContent = {
 
 
 export const backendConfig = {
-  base: "http://192.168.105.250:5000",
-  origin: "http://192.168.105.250:5000/api",
+  base: "http://192.168.29.2:5000",
+  origin: "http://192.168.29.2:5000/api",
 };
 

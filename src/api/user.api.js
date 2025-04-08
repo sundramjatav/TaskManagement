@@ -42,3 +42,36 @@ export const getProfile = async () => {
       // window.location.href = "/login";
   }
 };
+
+export const updateProfile = async (payload) => {
+  try {
+    const response = await axios.put(`${origin}/user/updateProfile`, payload, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      withCredentials: true,
+    });
+    return response;
+  } catch (error) {
+    console.log(error);
+      // localStorage.clear();
+      // sessionStorage.clear();
+      // window.location.href = "/login";
+  }
+};
+
+export const updateEmailNotification = async (payload) => {
+  try {
+    const response = await axios.put(`${origin}/user/updateEmailNotification`, payload, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      withCredentials: true,
+    });
+    return response;
+  }
+catch (error) {
+    console.log(error);
+      // localStorage.clear();
+      // sessionStorage.clear();
+      // window.location.href = "/login";
+  }
+}
+
+

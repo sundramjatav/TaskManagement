@@ -12,6 +12,7 @@ import AllTodayTask from './Component/AllTodayTask';
 import PublicRoute from './Component/PublicRoute';
 import ProtectedRoute from './Component/ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
+import Settings from './Pages/Settings';
 
 const RouterPages = () => {
   return (
@@ -48,6 +49,7 @@ const RouterPages = () => {
           <Route path={Routers.TASK} element={<Task />} />
           <Route path={Routers.TASK_REPORT} element={<TaskReport />} />
           <Route path={Routers.ALL_TODAY_TASK} element={<AllTodayTask />} />
+          <Route path={Routers.SETTINGS} element={<Settings />} />
         </Route>
       </Routes>
       <ToastContainer position="top-center" autoClose={3000} />
