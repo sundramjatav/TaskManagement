@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getMonthlytask, getWeeklytask, getYesterdaytask } from '../api/task.api';
+import PageLoader from '../Component/PageLoader';
 
 const TaskReport = () => {
   const [tasks, setTasks] = useState([])
@@ -33,8 +34,8 @@ const TaskReport = () => {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === tab
-                ? 'bg-bg-color1 text-text-color'
-                : 'border border-bg-color1 text-bg-color1 hover:text-text-color hover:bg-bg-color1'
+              ? 'bg-bg-color1 text-text-color'
+              : 'border border-bg-color1 text-bg-color1 hover:text-text-color hover:bg-bg-color1'
               }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -43,7 +44,9 @@ const TaskReport = () => {
       </div>
 
       {tasks?.length === 0 ? (
-        <p className="text-sm text-gray-500">No tasks found for this period.</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center ">
+          <PageLoader />
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6" >
           {tasks.map((task) => (

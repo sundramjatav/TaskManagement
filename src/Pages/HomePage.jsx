@@ -2,18 +2,33 @@ import React, { useEffect, useState } from 'react';
 import TodayTask from '../Component/TodayTask';
 import PieChart from '../Component/PieChart';
 import { getTodaytask } from '../api/task.api';
+import PageLoader from '../Component/PageLoader'; // 👈 import your loader component
 
 const HomePage = () => {
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true); // 👈 loader state
 
   useEffect(() => {
     const fetchTasks = async () => {
-      const { data } = await getTodaytask();
-      setTasks(data.data);
+      try {
+        const { data } = await getTodaytask();
+        const today = new Date().toISOString().split('T')[0];
+        
+        const todayTasks = data.data.filter(task => {
+          const taskDate = new Date(task.dueDate).toISOString().split('T')[0];
+          return taskDate === today;
+        });
+
+        setTasks(todayTasks);
+      } catch (err) {
+        console.error("Error fetching tasks:", err);
+      } finally {
+        setLoading(false); // 👈 hide loader once done
+      }
     };
+
     fetchTasks();
   }, []);
-
 
   const stats = [
     {
@@ -35,7 +50,7 @@ const HomePage = () => {
   ];
 
   return (
-    <>
+    <div className='relative'> {/* 👈 for loader positioning */}
       <div className='flex flex-col gap-5'>
         <div className='flex items-center flex-col lg:flex-row gap-5'>
           <div className='w-full lg:w-2/3 h-full p-4 grid gap-5 md:grid-cols-2 grid-cols-1 bg-text-color/5 rounded-md'>
@@ -60,7 +75,13 @@ const HomePage = () => {
         </div>
         <TodayTask />
       </div>
-    </>
+
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center  bg-opacity-70 z-50">
+          <PageLoader />
+        </div>
+      )}
+    </div>
   );
 };
 

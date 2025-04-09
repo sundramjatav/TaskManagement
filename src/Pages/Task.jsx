@@ -4,6 +4,7 @@ import AddTask from './AddTask';
 import axios from 'axios';
 import { addTask, deleteTask, getTodaytask, updateTask } from '../api/task.api';
 import { toast } from 'react-toastify';
+import PageLoader from '../Component/PageLoader';
 
 const origin = import.meta.env.VITE_BACKEND_URL;
 
@@ -46,10 +47,10 @@ const Task = () => {
             };
             const today = new Date().setHours(0, 0, 0, 0); // aaj ki date, time hata ke
             const dueDate = new Date(newTask.dueDate).setHours(0, 0, 0, 0); // user-selected date
-            
+
             if (dueDate < today) {
-              toast.error("Due date cannot be in the past!")
-              return; // ya error message dikhao
+                toast.error("Due date cannot be in the past!")
+                return; // ya error message dikhao
             }
 
             if (isEditing) {
@@ -129,7 +130,10 @@ const Task = () => {
             </div>
 
             {loading ? (
-                <p className="text-sm text-gray-500">Loading tasks...</p>
+                <div className="fixed inset-0 z-50 flex items-center justify-center ">
+                    <PageLoader />
+                </div>
+
             ) : todayTasks.length === 0 ? (
                 <p className="text-sm text-gray-500">No tasks for today.</p>
             ) : (
@@ -142,10 +146,10 @@ const Task = () => {
                                 <div className="flex items-center gap-2 mt-2">
                                     <span
                                         className={`inline-block px-3 py-1 text-[.75rem] rounded-full ${task.status === 'Completed'
-                                                ? 'bg-bg-color text-green-600'
-                                                : task.status === 'Progress'
-                                                    ? 'bg-bg-color text-yellow-600'
-                                                    : 'bg-bg-color text-red-600'
+                                            ? 'bg-bg-color text-green-600'
+                                            : task.status === 'Progress'
+                                                ? 'bg-bg-color text-yellow-600'
+                                                : 'bg-bg-color text-red-600'
                                             }`}
                                     >
                                         {task.status}
@@ -162,9 +166,11 @@ const Task = () => {
 
                             </div>
                             <div className="flex gap-3">
-                                <button onClick={() => handleEdit(task)} className="bg-text-color/10 text-bg-color1 p-2 rounded">
-                                    <FaEdit />
-                                </button>
+                                {task.status !== 'Completed' && (
+                                    <button onClick={() => handleEdit(task)} className="bg-text-color/10 text-bg-color1 p-2 rounded">
+                                        <FaEdit />
+                                    </button>
+                                )}
                                 <button onClick={() => handleDelete(task._id)} className="bg-text-color/10 text-bg-color1 p-2 rounded">
                                     <FaTrash />
                                 </button>
