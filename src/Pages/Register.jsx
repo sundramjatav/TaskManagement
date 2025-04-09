@@ -6,6 +6,7 @@ import { userRegister, verifyOtp } from '../api/user.api';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import OtpPopup from '../Component/OtpPopup ';
+import background from '../assets/images/background.avif';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -37,24 +38,24 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true); // Start loading
-    
+
         let newErrors = {};
-    
+
         if (!validatePassword(formData.password)) {
             newErrors.password = 'Password must contain at least 8 characters including letters, numbers & a symbol.';
         }
-    
+
         if (!formData.email.includes('@')) {
             newErrors.email = 'Please enter a valid email address.';
         }
-    
+
         setErrors(newErrors);
-    
+
         if (Object.keys(newErrors).length === 0) {
             try {
                 const response = await userRegister(formData);
                 console.log('Register Success:', response);
-    
+
                 if (response.success === true) {
                     toast.success("Registration successful! Please verify your email.");
                     setEmailForOtp(formData.email);
@@ -62,7 +63,7 @@ const Register = () => {
                 } else {
                     toast.error(response.message || "Something went wrong.");
                 }
-    
+
                 setFormData({
                     firstname: '',
                     lastname: '',
@@ -75,16 +76,16 @@ const Register = () => {
                 console.error('Register Error:', error);
             }
         }
-    
+
         setLoading(false); // Stop loading
     };
 
-    const handleOtpSubmit = async ( otp ) => {
+    const handleOtpSubmit = async (otp) => {
         const payload = {
             email: emailForOtp,
             otp: otp,
         };
-        
+
         try {
             const response = await verifyOtp(payload);
             console.log('OTP Verification Response:', response);
@@ -104,76 +105,79 @@ const Register = () => {
 
     return (
         <>
-            <div className="h-screen flex flex-col lg:flex-row bg-bg-color text-text-color">
-                <div className="lg:w-1/2 hidden lg:flex flex-col justify-center items-center p-10 space-y-4">
-                    <h1 className="text-4xl font-bold">Design with us</h1>
-                    <p className="text-lg text-center max-w-md">
-                        Access to thousands of design resources and templates
-                    </p>
-                    <img src={img} className='h-96 object-cover' alt="Design Illustration" />
-                </div>
+            <div
+                className="h-screen w-full"
+                style={{
+                    backgroundImage: `url(${background})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                }}
+            >
+                <div className="h-screen flex flex-col lg:flex-row bg-bg-color/50 text-text-color">
+                    
 
-                <div className="lg:w-1/2 w-full md:p-10 p-5 flex items-center justify-center h-full">
-                    <div className='w-full max-w-xl bg-text-color/5 backdrop-blur-lg rounded-xl p-8 text-bg-color h-fit mx-auto'>
-                        <h2 className="text-2xl font-semibold mb-6 text-text-color">Sign up now</h2>
-                        <form className="space-y-4" onSubmit={handleSubmit}>
-                            <div className="flex flex-col lg:flex-row gap-4">
-                                <input type="text" name="firstname" placeholder="First name" value={formData.firstname} onChange={handleChange}
+                    <div className="lg:w-1/2 w-full md:p-10 p-5 flex items-center justify-center h-full">
+                        <div className='w-full max-w-xl bg-text-color/5 backdrop-blur-lg rounded-xl p-8 text-bg-color h-fit mx-auto'>
+                            <h2 className="text-2xl font-semibold mb-6 text-center text-text-color">Sign up</h2>
+                            <form className="space-y-4" onSubmit={handleSubmit}>
+                                <div className="flex flex-col lg:flex-row gap-4">
+                                    <input type="text" name="firstname" placeholder="First name" value={formData.firstname} onChange={handleChange}
+                                        className="border rounded-md p-2 w-full outline-none bg-transparent text-text-color text-sm" />
+                                    <input type="text" name="lastname" placeholder="Last name" value={formData.lastname} onChange={handleChange}
+                                        className="border rounded-md p-2 w-full outline-none bg-transparent text-text-color text-sm" />
+                                </div>
+
+                                <div>
+                                    <input type="email" name="email" placeholder="Email address" value={formData.email} onChange={handleChange}
+                                        className="border rounded-md p-2 w-full outline-none bg-transparent text-text-color text-sm" />
+                                    {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
+                                </div>
+
+                                <input type="tel" name="phone" placeholder="Phone number" value={formData.phone} onChange={handleChange}
                                     className="border rounded-md p-2 w-full outline-none bg-transparent text-text-color text-sm" />
-                                <input type="text" name="lastname" placeholder="Last name" value={formData.lastname} onChange={handleChange}
-                                    className="border rounded-md p-2 w-full outline-none bg-transparent text-text-color text-sm" />
-                            </div>
 
-                            <div>
-                                <input type="email" name="email" placeholder="Email address" value={formData.email} onChange={handleChange}
-                                    className="border rounded-md p-2 w-full outline-none bg-transparent text-text-color text-sm" />
-                                {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
-                            </div>
-
-                            <input type="tel" name="phone" placeholder="Phone number" value={formData.phone} onChange={handleChange}
-                                className="border rounded-md p-2 w-full outline-none bg-transparent text-text-color text-sm" />
-
-                            <div className="relative">
-                                <input type={showPassword ? "text" : "password"} name="password" placeholder="Password" value={formData.password}
-                                    onChange={handleChange}
-                                    className="border rounded-md p-2 w-full outline-none pr-10 bg-transparent text-text-color text-sm" />
-                                <span className="absolute right-3 top-3 text-gray-400 text-sm cursor-pointer"
-                                    onClick={() => setShowPassword(!showPassword)}>
-                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                </span>
-                                {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password}</p>}
-                            </div>
-
-                            <div className="space-y-2 text-sm text-text-color">
-                                <label className="flex items-start gap-2">
-                                    <input type="checkbox" className="mt-1" required />
-                                    <span>
-                                        By creating an account, I agree to our <a href="#" className="underline">Terms of Use</a> and <a href="#" className="underline">Privacy Policy</a>.
+                                <div className="relative">
+                                    <input type={showPassword ? "text" : "password"} name="password" placeholder="Password" value={formData.password}
+                                        onChange={handleChange}
+                                        className="border rounded-md p-2 w-full outline-none pr-10 bg-transparent text-text-color text-sm" />
+                                    <span className="absolute right-3 top-3 text-gray-400 text-sm cursor-pointer"
+                                        onClick={() => setShowPassword(!showPassword)}>
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
                                     </span>
-                                </label>
-                                <label className="flex items-start gap-2">
-                                    <input type="checkbox" className="mt-1" />
-                                    <span>
-                                        I consent to receive SMS and emails including updates, events, and promotions.
-                                    </span>
-                                </label>
-                            </div>
+                                    {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password}</p>}
+                                </div>
 
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className={`w-full py-2 rounded transition-all ${loading
-                                    ? 'bg-bg-color1/60 cursor-not-allowed'
-                                    : 'bg-bg-color1 hover:bg-bg-color1/90'
-                                    } text-text-color`}
-                            >
-                                {loading ? 'Sign up...' : 'Sign up'}
-                            </button>
+                                <div className="space-y-2 text-sm text-text-color">
+                                    <label className="flex items-start gap-2">
+                                        <input type="checkbox" className="mt-1" required />
+                                        <span>
+                                            By creating an account, I agree to our <a href="#" className="underline">Terms of Use</a> and <a href="#" className="underline">Privacy Policy</a>.
+                                        </span>
+                                    </label>
+                                    <label className="flex items-start gap-2">
+                                        <input type="checkbox" className="mt-1" />
+                                        <span>
+                                            I consent to receive SMS and emails including updates, events, and promotions.
+                                        </span>
+                                    </label>
+                                </div>
 
-                            <p className="text-center text-sm mt-2 text-text-color/70">
-                                Already have an account? <Link to={'/login'} className="underline">Log in</Link>
-                            </p>
-                        </form>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className={`w-full py-2 rounded transition-all ${loading
+                                        ? 'bg-bg-color1/60 cursor-not-allowed'
+                                        : 'bg-bg-color1 hover:bg-bg-color1/90'
+                                        } text-text-color`}
+                                >
+                                    {loading ? 'Sign up...' : 'Sign up'}
+                                </button>
+
+                                <p className="text-center text-sm mt-2 text-text-color/70">
+                                    Already have an account? <Link to={'/login'} className="underline">Log in</Link>
+                                </p>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

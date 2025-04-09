@@ -58,7 +58,7 @@ const Layout = () => {
     return (
         <>
             <div className="flex justify-end md:p-2 gap-4 w-full h-screen bg-bg-color text-text-color">
-                <div className={`absolute md:relative w-[280px] py-5 z-50 h-full bg-text-color/5 backdrop-blur-xl  md:rounded-md flex duration-300 flex-col ${!isSidebarOpen ? "md:left-0 -left-full" : "md:-left-full left-0"
+                <div className={`absolute md:relative w-[280px] h-screen py-5 z-50 md:h-full bg-text-color/5 backdrop-blur-xl  md:rounded-md flex duration-300 flex-col ${!isSidebarOpen ? "md:left-0 -left-full" : "md:-left-full left-0"
                     }`}
                 >
                     <div className="px-4 flex">
@@ -126,7 +126,7 @@ const Layout = () => {
                     </div>
                 </div>
                 <div className={`flex flex-col w-full h-full duration-200 ${isSidebarOpen ? "w-full" : "md:w-[calc(100%-280px)]"} flex-shrink-0`}>
-                    <main className="overflow-y-auto  flex flex-col gap-1 pr-2">
+                    <main className="overflow-y-auto  flex flex-col gap-1 md:pr-2">
                         <header className="flex items-center  p-2 md:rounded-md bg-text-color/5 backdrop-blur-xl  justify-between">
                             <div className="flex items-center gap-2">
                                 <button
@@ -168,10 +168,10 @@ const Layout = () => {
 
 
                         </header>
-                        <div className='pr-2  pt-4'>
+                        <div className='md:pr-2  pt-4'>
                             <Outlet data={data} />
                         </div>
-                        <div className=' mt-4'>
+                        <div className='mt-4'>
                             <Footer />
                         </div>
                     </main>
