@@ -13,60 +13,77 @@ const ChatPopup = () => {
 
     const handleSend = async () => {
         if (!input.trim()) return;
-
+    
         let newMessages = [...messages];
-
+    
         // Step 1: Get user name and fetch suggested task
         if (step === 1) {
             const name = input.trim();
             setUserName(name);
             newMessages.push({ sender: "user", text: name });
             newMessages.push({ sender: "bot", text: `Hi ${name}! 👋 Welcome back.` });
-
+            newMessages.push({ sender: "bot", text: "..." }); // Loading indicator
+            setMessages(newMessages);
+            setInput("");
+    
             try {
                 const res = await getSuggestedTask();
-                console.log("API response:", res.data);
-
+                // console.log("API response:", res.data);
+    
                 const suggestedTask = res.data.suggestedTask;
                 if (suggestedTask) {
                     setTask(suggestedTask);
-
+    
+                    // Replace last "..." with task message
+                    newMessages.pop();
                     newMessages.push({
                         sender: "bot",
                         text: `Your suggested task for today is: "${suggestedTask.title}". Please type: complete, progress, or skip.`,
                     });
-
+    
                     setStep(2);
                 } else {
+                    newMessages.pop();
                     newMessages.push({ sender: "bot", text: "No task found for you today." });
                 }
             } catch (error) {
                 console.error("Task fetch error:", error);
+                newMessages.pop();
                 newMessages.push({ sender: "bot", text: "Sorry! Unable to fetch your task right now." });
             }
+    
+            setMessages([...newMessages]);
+            return;
         }
-
+    
         // Step 2: Handle task status input
-        else if (step === 2) {
+        if (step === 2) {
             const status = input.toLowerCase();
+            newMessages.push({ sender: "user", text: input });
+    
             if (["complete", "progress", "skip"].includes(status)) {
-                newMessages.push({ sender: "user", text: input });
-
+                newMessages.push({ sender: "bot", text: "..." }); // Loading indicator
+                setMessages(newMessages);
+                setInput("");
+    
                 try {
-                    const payload ={
-                        taskId : task._id ,
-                         action : status
-                    }
-                    const res =  await updateSuggestedTask(payload);
+                    const payload = {
+                        taskId: task._id,
+                        action: status
+                    };
+                    const res = await updateSuggestedTask(payload);
                     console.log(res);
+    
+                    newMessages.pop(); // remove "..."
                     newMessages.push({
                         sender: "bot",
                         text: `Thanks ${userName}! Your task "${task.title}" is marked as "${status}". ✅`,
                     });
-
+    
                     setStep(3);
                 } catch (error) {
                     console.error("Status update error:", error);
+                    newMessages.pop(); // remove "..."
                     newMessages.push({ sender: "bot", text: "Failed to update task status. Try again later." });
                 }
             } else {
@@ -75,11 +92,12 @@ const ChatPopup = () => {
                     text: "I'm in development phase. 🚧 Please use: complete, progress, or skip.",
                 });
             }
+    
+            setMessages([...newMessages]);
+            setInput("");
         }
-
-        setMessages(newMessages);
-        setInput("");
     };
+    
 
     return (
         <div className="fixed bottom-6 right-6 z-50">
