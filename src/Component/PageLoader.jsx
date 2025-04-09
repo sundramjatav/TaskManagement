@@ -1,4 +1,4 @@
-import '../app.css'
+
 const PageLoader = () => {
   return (
     <>
