@@ -23,7 +23,6 @@ const Layout = () => {
         { path: Routers.TASK, label: "Task", icon: <FaHome /> },
         { path: Routers.TASK_REPORT, label: "Task Report", icon: <FaHome /> },
         { path: Routers.SETTINGS, label: "Setting", icon: <AiFillSetting /> },
-
     ];
 
     const actionButtons = [
