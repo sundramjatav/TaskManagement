@@ -8,7 +8,7 @@ export const MainContent = {
 
 
 export const backendConfig = {
-  base: "http://192.168.105.250:5000",
-  origin: "http://192.168.105.250:5000/api",
+  base: "https://vertual-task-assistance.onrender.com",
+  origin: "https://vertual-task-assistance.onrender.com/api",
 };
 

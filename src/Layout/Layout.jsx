@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { FaHome, FaPlus, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaSignOutAlt } from "react-icons/fa";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FiChevronsRight } from 'react-icons/fi';
-import { MdOutlineSearch } from 'react-icons/md';
 import { Routers } from '../constants/Routes';
 import { CgProfile } from 'react-icons/cg';
 import { AiFillSetting } from 'react-icons/ai';
-import { addTask } from '../store/task/taskSlice';
-import AddTask from '../Pages/AddTask';
 import Footer from '../Component/Footer';
-import { useDispatch, useSelector } from 'react-redux';
 import { getProfile } from '../api/user.api';
+import ChatPopup from '../Component/ChatPopup';
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -18,41 +15,24 @@ const Layout = () => {
     const [data, setData] = useState([]);
     const location = useLocation();
     const navigate = useNavigate();
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const tasks = useSelector(state => state.task.tasks);
-    const dispatch = useDispatch();
-    const [newTask, setNewTask] = useState({ title: '', description: '', status: 'Pending', date: '' });
 
-    const handleAddTask = () => {
-        dispatch(addTask(newTask));
-        setNewTask({ title: '', description: '', status: 'Pending', date: '' });
-        setIsEditing(false);
-        setEditId(null);
-        setIsPopupOpen(false);
-    };
 
     const menuItems = [
         { path: Routers.HOMEPAGE, label: "Dashboard", icon: <FaHome /> },
         { path: Routers.PROFILE, label: "Profile", icon: <CgProfile /> },
         { path: Routers.TASK, label: "Task", icon: <FaHome /> },
         { path: Routers.TASK_REPORT, label: "Task Report", icon: <FaHome /> },
+        { path: Routers.SETTINGS, label: "Setting", icon: <AiFillSetting /> },
+
     ];
 
     const actionButtons = [
-        {
-            label: "Setting",
-            icon: <AiFillSetting />,
-            bgColor: "bg-[#F04B4B]",
-            func: () => {
-                navigate(Routers.SETTING);
-            },
-        },
         {
             label: "Logout",
             icon: <FaSignOutAlt />,
             bgColor: "bg-[#F04B4B]",
             func: () => {
-                localStorage.removeItem("token");
+                sessionStorage.removeItem("token");
                 navigate(Routers.LOGIN);
             },
         },
@@ -62,13 +42,6 @@ const Layout = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
-    const handleSubmenuToggle = (label) => {
-        if (activeMenu === label) {
-            setActiveMenu(null);
-        } else {
-            setActiveMenu(label);
-        }
-    };
 
     const fetchProfileData = async () => {
         try {
@@ -81,7 +54,7 @@ const Layout = () => {
 
     useEffect(() => {
         fetchProfileData();
-    },[]);
+    }, []);
 
     return (
         <>
@@ -154,8 +127,8 @@ const Layout = () => {
                     </div>
                 </div>
                 <div className={`flex flex-col w-full h-full duration-200 ${isSidebarOpen ? "w-full" : "md:w-[calc(100%-280px)]"} flex-shrink-0`}>
-                    <main className="overflow-y-auto  flex flex-col gap-1">
-                        <header className="flex items-center  p-3 md:rounded-md bg-text-color/5 backdrop-blur-xl  justify-between">
+                    <main className="overflow-y-auto  flex flex-col gap-1 pr-2">
+                        <header className="flex items-center  p-2 md:rounded-md bg-text-color/5 backdrop-blur-xl  justify-between">
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={toggleSidebar}
@@ -173,46 +146,39 @@ const Layout = () => {
                                 </button>
                             </div>
                             <div className="flex items-center md:gap-10 gap-4">
-                                <button
+                                {/* <button
                                     onClick={() => setIsPopupOpen(true)}
                                     className="bg-bg-color1/90 text-white px-4 py-2  hover:bg-bg-color1 md:text-sm text-xs rounded  flex items-center gap-2"
                                 >
                                     <FaPlus /> Add Task
-                                </button>
+                                </button> */}
                                 <div className='flex items-center gap-4'>
                                     <div className='flex flex-col items-end'>
                                         <p className="text-text-color text-sm md:text-base font-semibold capitalize">{data?.firstname} {data?.lastname}</p>
                                         <p className='text-xs text-text-color'>{data.email}</p>
                                     </div>
                                     <div className='md:w-10 md:h-10 w-8 h-8 rounded-md overflow-hidden  bg-red-300'>
-                                        <img className='w-full h-full object-cover' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSIRYFeFCUaj8kiH8kCt6qKYuPwbr6fhoXDA&s" alt="" />
-                                    </div>
+                                        <img
+                                            className='w-full h-full object-cover'
+                                            src={data.profilePicture || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSIRYFeFCUaj8kiH8kCt6qKYuPwbr6fhoXDA&s"}
+                                            alt=""
+                                        />                                    </div>
                                 </div>
                             </div>
 
 
 
                         </header>
-                        <div className='p-4 md:px-2'>
-                            <Outlet />
+                        <div className='pr-2  pt-4'>
+                            <Outlet data={data} />
                         </div>
-                        <div className='md:px-2'>
+                        <div className=' mt-4'>
                             <Footer />
                         </div>
                     </main>
                 </div>
             </div>
-
-            {
-                isPopupOpen && (
-                    <AddTask
-                        onClose={() => setIsPopupOpen(false)}
-                        onAdd={handleAddTask}
-                        newTask={newTask}
-                        setNewTask={setNewTask}
-                    />
-                )
-            }
+            <ChatPopup />
         </>
     );
 };

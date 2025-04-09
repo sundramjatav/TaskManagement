@@ -3,8 +3,8 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import background from '../assets/images/background.avif';
 import { Link, useNavigate } from 'react-router-dom';
 import { getProfile, userLogin } from '../api/user.api';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../store/user/userSlice';
 
@@ -56,8 +56,8 @@ const Login = () => {
 
             if (response?.success) {
                 const { user, token } = response;
-                localStorage.setItem('token', token);
                 dispatch(setUser(user));
+                sessionStorage.setItem('token', token);
                 toast.success('Login successful!');
                 navigate('/');
                 await getProfile()
